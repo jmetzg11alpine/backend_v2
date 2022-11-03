@@ -1,0 +1,38 @@
+Virtual Environment 
+    python -m venv venv
+    Command Palette (view or ctrl+shift+p) '+ Enter Interpreter path' => './venv/bin/python'
+    terminal => 'source venv/bin/activate'
+
+FASTAPI 
+    pip install fastapi[all] (in virtual environment)
+
+Start Server 
+    uvicorn main:app
+    uvicorn app.main:app --reload (updates server automatically)
+
+Documentation
+    got to normal url/docs or url/redoc
+
+supabase
+    github: jmetzg11alpine 
+    password: fastapiphoenix6
+    database: fastapi
+    project url: https://lczzwtyosjdiqhlaifzg.supabase.co
+    api key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxjenp3dHlvc2pkaXFobGFpZnpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NjQ3NzgwOTEsImV4cCI6MTk4MDM1NDA5MX0.R0wy_a5Y3gHT-XWcyCfbrne_OOi9dcLDQ9DLEsgiMew
+
+query functions: 
+    https://postgrest.org/en/stable/api.html
+    https://github.com/supabase-community/supabase-py
+    https://www.analyticsvidhya.com/blog/2022/07/introduction-to-supabase-postgres-database-using-python/
+    Fetching all 
+        supabase.table('demo-database').select('*').execute().data # fetching documents
+    Filter 
+        supabase.table('demo-database').select('*').gt('age', 35).execute().data # fetching documents with filtering
+    Multiple Filtering 
+        supabase.table('demo-database').select('*').gt('age', 35).lt('age', 40).execute().data # multiple filtering
+    Updating
+        supabase.table('demo-database').update({"country": "France"}).eq("id", 2).execute() # updating a record
+    Delete
+        supabase.table("demo-database").delete().eq("id", 1).execute() # deleting a record
+    Inserting multipe, build data first [{}, {}, {}]
+        supabase.table('demo-database').insert(data).execute() # inserting multiple records
