@@ -1,0 +1,1 @@
+{"id":"feed29d4-ac33-4c9e-be97-b0096e91ef70","space":37049,"runtime":"python3.9","name":"app","path":"evtssx","project":"b012fbqh","account":"144798365827","region":"us-east-1","deps":["deta==1.1.0","fastapi==0.85.2"],"envs":null,"public":true,"log_level":"off","cron":""}

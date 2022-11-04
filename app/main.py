@@ -1,10 +1,9 @@
 from fastapi import FastAPI 
+from deta import Deta
 from fastapi.middleware.cors import CORSMiddleware
-from supabase import create_client, Client 
-from .config import settings 
+from pydantic import BaseModel 
+import collections
 import time
-from . import schemas
-from . import functions
 
 app = FastAPI()
 
@@ -17,34 +16,80 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+############## for post requests #############
+class Quiz(BaseModel):
+    name: str 
+    score: int 
+
+################### helper functions ##################
+def get_quiz_scores(scores):
+    response = {}
+    for score in scores:
+        response[score['name']] = score['score']
+    return response
+
+def get_scores(q1, q2, q3, q4):
+    scores_dict = collections.defaultdict(list)
+    s1 = q1.fetch()
+    s2 = q2.fetch()
+    s3 = q3.fetch()
+    s4 = q4.fetch()
+    for score in [s1._items, s2._items, s3._items, s4._items]:
+        add_to_scores(scores_dict, score)
+    
+    for person in scores_dict:
+        length = len(scores_dict[person])
+        total = sum(scores_dict[person])
+        scores_dict[person] = total/length
+
+    return scores_dict
+  
+def add_to_scores(scores_dict, scores):
+    for score in scores:
+        scores_dict[score['name']].append(score['score'])
+
+################### gaining access to dbs #################
 while True:
     try:
-        supabase: Client = create_client(settings.url, settings.key)
-        print('database connection was successful!!')
+        deta = Deta('b012fbqh_9oJ7mfAusXwewwjaHww2zoQvZJFhqiD7')
+        users = deta.Base('users')
+        q1 = deta.Base('q1')
+        q2 = deta.Base('q2')
+        q3 = deta.Base('q3')
+        q4 = deta.Base('q4')
         break
     except Exception as error:
         print('failed to connect')
         print('error', error)
         time.sleep(2)
+        
+################ entry #####################
+@app.get('/')
+def home_page():
+    results = {'endpoints': {'get': ['q1', 'q2', 'q3', 'q4', 'all_scores_average'], 'post': ['q1', 'q2', 'q3', 'q4']}}
+    print('loser')
+    return results
 
 ################ verify user ####################
 @app.get('/users')
 def verify_user():
-    users = supabase.table('users').select('*').execute()
-    return users.data
+    results = users.fetch()
+    print('loser')
+    return results._items
 
 
 ################## quiz 1 #########################
 @app.get('/q1')
 def q1_get():
-    scores = functions.get_quiz_scores(supabase, 'q1')
+    scores = q1.fetch()
+    scores = get_quiz_scores(scores._items)
     return scores
 
 @app.post('/q1')
-def q1_post(quiz: schemas.Quiz):
+def q1_post(quiz: Quiz):
     quiz = quiz.dict()
     try:
-        supabase.table('q1').insert(quiz).execute()
+        q1.insert({'name': quiz['name'], 'score': quiz['score'], 'key': quiz['name']+quiz['name']})
         return 1
     except:
         return 2
@@ -52,29 +97,32 @@ def q1_post(quiz: schemas.Quiz):
 ################## quiz 2 #########################
 @app.get('/q2')
 def q2_get():
-    scores = functions.get_quiz_scores(supabase, 'q2')
+    scores = q2.fetch()
+    scores = get_quiz_scores(scores._items)
     return scores
 
 @app.post('/q2')
-def q2_post(quiz: schemas.Quiz):
+def q2_post(quiz: Quiz):
     quiz = quiz.dict()
     try:
-        supabase.table('q2').insert(quiz).execute()
+        q2.insert({'name': quiz['name'], 'score': quiz['score'], 'key': quiz['name']+quiz['name']})
         return 1
     except:
         return 2
+        
 
 ################## quiz 3 #########################
 @app.get('/q3')
 def q3_get():
-    scores = functions.get_quiz_scores(supabase, 'q3')
+    scores = q3.fetch()
+    scores = get_quiz_scores(scores._items)
     return scores
 
 @app.post('/q3')
-def q3_post(quiz: schemas.Quiz):
+def q3_post(quiz: Quiz):
     quiz = quiz.dict()
     try:
-        supabase.table('q3').insert(quiz).execute()
+        q3.insert({'name': quiz['name'], 'score': quiz['score'], 'key': quiz['name']+quiz['name']})
         return 1
     except:
         return 2
@@ -83,14 +131,15 @@ def q3_post(quiz: schemas.Quiz):
 ################## quiz 4 #########################
 @app.get('/q4')
 def q4_get():
-    scores = functions.get_quiz_scores(supabase, 'q4')
+    scores = q4.fetch()
+    scores = get_quiz_scores(scores._items)
     return scores
 
 @app.post('/q4')
-def q4_post(quiz: schemas.Quiz):
+def q4_post(quiz: Quiz):
     quiz = quiz.dict()
     try:
-        supabase.table('q4').insert(quiz).execute()
+        q4.insert({'name': quiz['name'], 'score': quiz['score'], 'key': quiz['name']+quiz['name']})
         return 1
     except:
         return 2
@@ -99,6 +148,5 @@ def q4_post(quiz: schemas.Quiz):
 ################## user average #########################
 @app.get('/all_scores_average')
 def all_scores_average():
-    scores = functions.get_scores(supabase)
-    return scores
+    return get_scores(q1, q2, q3, q4)
 

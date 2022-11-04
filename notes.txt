@@ -36,3 +36,15 @@ query functions:
         supabase.table("demo-database").delete().eq("id", 1).execute() # deleting a record
     Inserting multipe, build data first [{}, {}, {}]
         supabase.table('demo-database').insert(data).execute() # inserting multiple records
+
+---------------- instructions are on fastapi deployment with deta documentation ------------------------
+jmetzg11
+Phoenix6!
+jmetzg11@gmail.com
+
+
+------------------------ deta database ---------------------
+https://docs.deta.sh/docs/base/py_tutorial
+
+key name: 17iox
+project key: b012fbqh_9oJ7mfAusXwewwjaHww2zoQvZJFhqiD7
