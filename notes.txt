@@ -48,3 +48,7 @@ https://docs.deta.sh/docs/base/py_tutorial
 
 key name: 17iox
 project key: b012fbqh_9oJ7mfAusXwewwjaHww2zoQvZJFhqiD7
+
+
+european project key:
+a0499p4s_aP4D8LBstFNj8tujRmuz6vGdVMYfBRB5
